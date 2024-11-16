@@ -6,9 +6,6 @@ import sys
 import torch
 import time
 
-# wandb
-import wandb
-
 from copy import deepcopy
 
 from algorithms.sac_separate_critics import SACmultiCritics
@@ -52,9 +49,6 @@ def get_evaluation_args(overwritten_args=None):
     parser.add_argument("--render", type=parse_bool, default=True)
     parser.add_argument("--auto_wait", type=float, default=0.075)
     parser.add_argument("--user_wait", type=parse_bool, default=False)
-
-    # wandb arguments
-    parser.add_argument("--wandb_log_key", default=None, type=str)
 
     return parser.parse_args(overwritten_args)
 
