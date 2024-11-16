@@ -19,6 +19,9 @@ from alfred.utils.recorder import Recorder
 from alfred.utils.directory_tree import *
 import alfred.defaults
 
+import wandb
+import os
+
 
 def set_up_alfred():
     alfred.defaults.DEFAULT_DIRECTORY_TREE_ROOT = "./storage"
@@ -158,6 +161,9 @@ def get_main_args(overwritten_args=None):
 
     parser.add_argument('--time_scale', type=float, default=1.,
                         help='Time Scale (real-time=1.) in the Unity physics simulator.')
+    
+    # Wandb arguments
+    parser.add_argument("--wandb_log_key", default=None, type=str)
 
     return parser.parse_args(overwritten_args)
 
