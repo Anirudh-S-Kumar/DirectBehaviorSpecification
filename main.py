@@ -313,6 +313,39 @@ def main(config, dir_tree=None, logger=None, pbar="default_pbar"):
 
     agent = create_agent(config, env, logger)
 
+    # deep copy
+    dummy_policy = deepcopy(agent.policy.state_dict())
+
+    # Load the models
+    try:
+        dir_tree_model_loader = DirectoryTree.init_from_branching_info(root_dir="storage",storage_name="Ra1_sac_ArenaEnv-v0_singleConstraintEnergy",experiment_num=1, seed_num=1)   
+        config = load_config_from_json(dir_tree.seed_dir / "config.json")
+        model_file = get_model_file(dir_tree=dir_tree_model_loader, model_type='last')
+        agent.load_model(path=model_file.parent, logger=logger, name=model_file.name)
+
+        updated_policy = agent.policy.state_dict()
+
+        # Check if the model has been loaded correctly
+        is_loaded = True
+
+        for k in dummy_policy.keys():
+            if(dummy_policy[k].shape != updated_policy[k].shape):
+                print(f"Error: {k} has shape {dummy_policy[k].shape} in the dummy model and shape {updated_policy[k].shape} in the loaded model")
+                is_loaded = False
+            elif(dummy_policy[k] != updated_policy[k]).sum():
+                print(f"Error: {k} has {((dummy_policy[k] != updated_policy[k]).sum())} different elements between the dummy model and the loaded model")
+                is_loaded = False
+            else:
+                print(f"{k} is fine")
+        
+        if is_loaded:
+            print("Model loaded correctly")
+        else:
+            raise Exception("Error: Prexisting Model not loaded correctly. Training from scratch")
+    except:
+        print("Error: Prexisting Model not loaded correctly. Training from scratch")
+        
+
     # Constrained RL wrapper
 
     if config.constraint_enforcement_method is not None:
